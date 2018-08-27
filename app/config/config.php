@@ -13,3 +13,10 @@
   define('SITENAME', 'File Upload Download');
   // App Version
   define('APPVERSION', '1.0.0');
+  // Logging
+  define('LOGFILEPATH', PUBLICROOT . DIRECTORY_SEPARATOR . 'app_log');
+  define('LOG_TRACE_ACTIVE', false);
+  define('LOG_WARN_ACTIVE', false);
+  define('LOG_INFO_ACTIVE', true);
+  define('LOG_DEBUG_ACTIVE', false);
+  define('LOG_ERROR_ACTIVE', true);
