@@ -1,19 +1,21 @@
 <?php require APPROOT . '/views/inc/header.php'; ?>
-<a href="<?php echo URLROOT; ?>/posts" class="btn btn-light"><i class="fa fa-backward"></i> Back</a>
-<br>
-<h1><?php echo $data['post']->title; ?></h1>
-<div class="bg-secondary text-white p-2 mb-3">
-  Written by <?php echo $data['user']->name; ?> on <?php echo $data['post']->created_at; ?>
-</div>
-<p><?php echo $data['post']->body; ?></p>
-
-<?php if($data['post']->user_id == $_SESSION['user_id']) : ?>
-  <hr>
-  <a href="<?php echo URLROOT; ?>/posts/edit/<?php echo $data['post']->id; ?>" class="btn btn-dark">Edit</a>
-
-  <form class="pull-right" action="<?php echo URLROOT; ?>/posts/delete/<?php echo $data['post']->id; ?>" method="post">
-    <input type="submit" value="Delete" class="btn btn-danger">
-  </form>
-<?php endif; ?>
-
+  <?php flash('post_message'); ?>
+  <a href="<?php echo URLROOT; ?>/posts" class="btn btn-light"><i class="fa fa-backward"></i> Back</a>
+  <div class="card card-body bg-light mt-5">
+  <?php if ($data['post'] != null) : ?>
+    <h2 class="mb-3">File Deletion</h2>
+    <div class="card card-body mb-3">
+	     <div class="media-body">
+              <h4 class="mt-0 mb-1"><?php echo $data['post']->getFilename(); ?></h4>
+               Modified for the last time on <?php echo date('m/d/Y H:i:s', $data['post']->getMTime()); ?>
+              </div>
+    </div>
+    <p>Are you sure you want to delete this file?</p>
+    <form class="pull-right" action="<?php echo URLROOT; ?>/posts/delete" method="post">
+      <button type="submit" name="id" value="<?php echo $data['post']->getFilename(); ?>" class="btn btn-danger">Delete</button>
+    </form>
+  <?php else : ?>
+    <h2>File not found :(</h2>
+  <?php endif; ?>
+  </div>
 <?php require APPROOT . '/views/inc/footer.php'; ?>
