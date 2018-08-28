@@ -7,9 +7,12 @@
 
       $this->postModel = $this->model('Post');
       $this->userModel = $this->model('User');
+      $this->logger = new Logger(__FILE__);
     }
 
     public function index(){
+      $this->logger->debug(__METHOD__ . " started");
+
       // Get posts
       $posts = $this->postModel->getPosts();
 
@@ -21,6 +24,8 @@
     }
 
     public function add(){
+      $this->logger->debug(__METHOD__ . " started");
+
       if($_SERVER['REQUEST_METHOD'] == 'POST'){
         // Sanitize POST array
         $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
@@ -35,6 +40,7 @@
         if($data['file'] == null || ($data['file']['size'] == 0 && ($data['file']['error'] == UPLOAD_ERR_OK || $data['file']['error'] == UPLOAD_ERR_NO_FILE))){
           $data['file_err'] = 'File is mandatory';
         } elseif ($data['file']['error'] != 0) { // Anything else than UPLOAD_ERR_OK or UPLOAD_ERR_NO_FILE...
+          $this->logger->error(__METHOD__ . " file error code {$data['file']['error']} was returned");
       	  $data['file_err'] = 'An error occurred trying to send the file. Try again';
       	}
 
@@ -42,9 +48,11 @@
         if(empty($data['file_err'])){
           // Validated
           if($this->postModel->addPost($data)){
+            $this->logger->info(__METHOD__ . " file {$data['file']['name']} was successfully added");
             flash('post_message', 'File Added');
             redirect('posts');
           } else {
+            $this->logger->error(__METHOD__ . " error on adding file {$data['file']['name']}");
             flash('post_message', 'Oops! Something went wrong trying to add the file', 'alert alert-danger');
             redirect('posts/add');
           }
@@ -53,6 +61,8 @@
           $this->view('posts/add', $data);
         }
       } else {
+        $this->logger->debug(__METHOD__ . " request method {$_SERVER['REQUEST_METHOD']}");
+
         $data = [
           'file' => null
         ];
@@ -62,16 +72,26 @@
     }
 
     public function show(){
+      $this->logger->debug(__METHOD__ . " started");
+
       if($_SERVER['REQUEST_METHOD'] == 'POST'){
         // Sanitize POST array
         $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
         $id =  isset($_POST['id']) ? $_POST['id'] : '';
         $post = $this->postModel->getPostById($id);
 
+        if($post == null) {
+          $this->logger->error(__METHOD__ . " file {$id} was not found");
+        } else {
+          $this->logger->info(__METHOD__ . " file {$id} was found and will be shown");
+        }
+
         $data = [
           'post' => $post
         ];
       } else {
+        $this->logger->debug(__METHOD__ . " request method {$_SERVER['REQUEST_METHOD']}");
+
         $data = [
           'post' => null
         ];
@@ -80,6 +100,8 @@
     }
 
     public function delete(){
+      $this->logger->debug(__METHOD__ . " started");
+
       if($_SERVER['REQUEST_METHOD'] == 'POST'){
         // Sanitize POST array
         $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
@@ -91,12 +113,15 @@
 
         if($post != null) {
           if($this->postModel->deletePost($id)){
+            $this->logger->info(__METHOD__ . " file {$id} was successfully removed");
             flash('post_message', 'File Removed');
             redirect('posts');
           } else {
+            $this->logger->error(__METHOD__ . " error on removing file {$id}");
             $error = true;
           }
         } else {
+          $this->logger->error(__METHOD__ . " file {$id} was not found");
           $error = true;
         }
         if ($error) {
@@ -104,11 +129,14 @@
           redirect('posts/show');
         }
       } else {
+        $this->logger->debug(__METHOD__ . " request method {$_SERVER['REQUEST_METHOD']}");
+
         redirect('posts');
       }
     }
 
     public function download() {
+      $this->logger->debug(__METHOD__ . " started");
       
       if($_SERVER['REQUEST_METHOD'] == 'POST'){
         // Sanitize POST array
@@ -118,12 +146,16 @@
         $post = $this->postModel->getPostById($id);
 
         if($post != null) {
+          $this->logger->info(__METHOD__ . " file {$id} was found and will be downloaded");
           $this->postModel->downloadPost($post);
         } else {
+          $this->logger->error(__METHOD__ . " file {$id} was not found");
           flash('post_message', 'Oops! Something went wrong trying to download the file', 'alert alert-danger');
           redirect('posts');
         }
       } else {
+        $this->logger->debug(__METHOD__ . " request method {$_SERVER['REQUEST_METHOD']}");
+
         redirect('posts');
       }
     }
