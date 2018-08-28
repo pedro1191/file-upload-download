@@ -1,52 +1,41 @@
 <?php
   class Post {
     private $db;
+    private $directoryPath;
 
     public function __construct(){
       $this->db = new Database;
+      $this->directoryPath = USERFILESROOT . DIRECTORY_SEPARATOR . $_SESSION['user_id'];
     }
 
     public function getPosts(){
-      $this->db->query('SELECT *,
-                        posts.id as postId,
-                        users.id as userId,
-                        posts.created_at as postCreated,
-                        users.created_at as userCreated
-                        FROM posts
-                        INNER JOIN users
-                        ON posts.user_id = users.id
-                        ORDER BY posts.created_at DESC
-                        ');
+      $results = array();
 
-      $results = $this->db->resultSet();
+      try {
+        $directory = new DirectoryIterator($this->directoryPath);
+        foreach ($directory as $fileInfo) {
+          if($fileInfo->isDot()) continue;
+          if($fileInfo->isFile()) array_push($results, new SplFileInfo($fileInfo->getPathname()));
+        }
+      } catch(UnexpectedValueException $e) {
+        //directory cannot be found. Nothing to do
+      }
 
       return $results;
     }
 
     public function addPost($data){
-      $this->db->query('INSERT INTO posts (title, user_id, body) VALUES(:title, :user_id, :body)');
-      // Bind values
-      $this->db->bind(':title', $data['title']);
-      $this->db->bind(':user_id', $data['user_id']);
-      $this->db->bind(':body', $data['body']);
+      $target_file = $this->directoryPath . DIRECTORY_SEPARATOR . basename($data['file']['name']);
 
-      // Execute
-      if($this->db->execute()){
-        return true;
-      } else {
-        return false;
+      if (!file_exists(USERFILESROOT)) {
+        mkdir(USERFILESROOT, 0777, true);
       }
-    }
-
-    public function updatePost($data){
-      $this->db->query('UPDATE posts SET title = :title, body = :body WHERE id = :id');
-      // Bind values
-      $this->db->bind(':id', $data['id']);
-      $this->db->bind(':title', $data['title']);
-      $this->db->bind(':body', $data['body']);
+      if (!file_exists($this->directoryPath)) {
+        mkdir($this->directoryPath, 0777, true);
+      }
 
       // Execute
-      if($this->db->execute()){
+      if (move_uploaded_file($data['file']['tmp_name'], $target_file)) {
         return true;
       } else {
         return false;
@@ -54,21 +43,41 @@
     }
 
     public function getPostById($id){
-      $this->db->query('SELECT * FROM posts WHERE id = :id');
-      $this->db->bind(':id', $id);
+      $result = null;
 
-      $row = $this->db->single();
+      try {
+        $directory = new DirectoryIterator($this->directoryPath);
+        foreach ($directory as $fileInfo) {
+          if($fileInfo->isDot()) continue;
+          if($fileInfo->getFilename() == $id) {
+            $result = $fileInfo;
+            break;
+          }
+        }
+      } catch(UnexpectedValueException $e) {
+        //directory cannot be found. Nothing to do
+      }
 
-      return $row;
+      return $result;
     }
 
     public function deletePost($id){
-      $this->db->query('DELETE FROM posts WHERE id = :id');
-      // Bind values
-      $this->db->bind(':id', $id);
+      $removed = false;
+      try {
+        $directory = new DirectoryIterator($this->directoryPath);
+        foreach ($directory as $fileInfo) {
+          if($fileInfo->isDot()) continue;
+          if($fileInfo->getFilename() == $id) {
+            $removed = unlink($fileInfo->getPathname());
+            break;
+          }
+        }
+      } catch(UnexpectedValueException $e) {
+        //directory cannot be found. Nothing to do
+      }
 
       // Execute
-      if($this->db->execute()){
+      if($removed){
         return true;
       } else {
         return false;
