@@ -22,3 +22,6 @@
   define('LOG_INFO_ACTIVE', true);
   define('LOG_DEBUG_ACTIVE', false);
   define('LOG_ERROR_ACTIVE', true);
+  // User Files Root
+  define('DIRECTORYNAME', 'userFiles'); //This constant is used only in this file
+  define('USERFILESROOT', PUBLICROOT . DIRECTORY_SEPARATOR . DIRECTORYNAME);
