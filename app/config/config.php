@@ -5,6 +5,9 @@
   define('DB_PASS', 'mysql');
   define('DB_NAME', 'fileuploaddownload');
 
+  // Default time zone for dates
+  date_default_timezone_set('America/Sao_Paulo');
+
   // App Root
   define('APPROOT', dirname(dirname(__FILE__)));
   // Public Root
