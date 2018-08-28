@@ -83,4 +83,20 @@
         return false;
       }
     }
+
+    public function downloadPost($post) {
+  
+      $type = mime_content_type($post->getPathname());
+      $fileName = $post->getFilename();
+  
+      // Send file headers
+      header("Content-type: $type");
+      header("Content-Disposition: attachment;filename=\"$fileName\"");
+      header("Content-Transfer-Encoding: binary");
+      header('Pragma: no-cache');
+      header('Expires: 0');
+      // Send the file contents.
+      set_time_limit(0);
+      readfile($post->getPathname());
+    }
   }

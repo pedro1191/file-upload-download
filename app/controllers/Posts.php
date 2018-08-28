@@ -107,4 +107,24 @@
         redirect('posts');
       }
     }
+
+    public function download() {
+      
+      if($_SERVER['REQUEST_METHOD'] == 'POST'){
+        // Sanitize POST array
+        $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+        $id = isset($_POST['id']) ? $_POST['id'] : '';
+        // Get existing post from model
+        $post = $this->postModel->getPostById($id);
+
+        if($post != null) {
+          $this->postModel->downloadPost($post);
+        } else {
+          flash('post_message', 'Oops! Something went wrong trying to download the file', 'alert alert-danger');
+          redirect('posts');
+        }
+      } else {
+        redirect('posts');
+      }
+    }
   }
