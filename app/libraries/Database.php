@@ -16,7 +16,10 @@
     private $stmt;
     private $error;
 
+    private $logger;
+
     public function __construct(){
+      $this->logger = new Logger(__FILE__);
       // Set DSN
       $dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->dbname;
       $options = array(
@@ -29,7 +32,7 @@
         $this->dbh = new PDO($dsn, $this->user, $this->pass, $options);
       } catch(PDOException $e){
         $this->error = $e->getMessage();
-        echo $this->error;
+        $this->logger->error(__METHOD__ . " fail to create PDO instance {$this->error}");
       }
     }
 
