@@ -3,6 +3,11 @@ body > .container {
     padding-top: 15px;
     padding-bottom: 15px;
 }
+/*upload button*/
+.upload-button {
+    overflow: hidden;
+    white-space: nowrap;
+  }
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
