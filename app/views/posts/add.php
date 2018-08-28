@@ -11,7 +11,7 @@
             <span id="invalid-feedback" class="invalid-feedback"><?php echo empty($data['file_err']) ? '' : $data['file_err']; ?></span>
 	       </div>
       </div>
-      <input type="submit" class="btn btn-primary" value="Send">
+      <input type="submit" class="btn btn-success" value="Send">
     </form>
   </div>
 <?php require APPROOT . '/views/inc/footer.php'; ?>
