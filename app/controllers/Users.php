@@ -2,9 +2,12 @@
   class Users extends Controller {
     public function __construct(){
       $this->userModel = $this->model('User');
+      $this->logger = new Logger(__FILE__);
     }
 
     public function register(){
+      $this->logger->debug(__METHOD__ . " started");
+
       // Check for POST
       if($_SERVER['REQUEST_METHOD'] == 'POST'){
         // Process form
@@ -59,16 +62,21 @@
 
           // Register User
           if($this->userModel->register($data)){
+            $this->logger->info(__METHOD__ . " user [{$data['name']}, {$data['email']}] was registered successfully");
             flash('register_success', 'You are registered and can log in');
             redirect('users/login');
           } else {
-            die('Something went wrong');
+            $this->logger->error(__METHOD__ . " error trying to register user [{$data['name']}, {$data['email']}]");
+            flash('register_error', 'Oops! Something went wrong trying to register you. Try again', 'alert alert-danger');
+            redirect('users/register');
           }
         } else {
           // Load view with errors
           $this->view('users/register', $data);
         }
       } else {
+        $this->logger->debug(__METHOD__ . " request method {$_SERVER['REQUEST_METHOD']}");
+
         // Init data
         $data =[
           'name' => '',
@@ -87,6 +95,8 @@
     }
 
     public function login(){
+      $this->logger->debug(__METHOD__ . " started");
+
       // Check for POST
       if($_SERVER['REQUEST_METHOD'] == 'POST'){
         // Process form
@@ -106,8 +116,10 @@
           $data['email_err'] = 'Please enter a valid email';
         } elseif($this->userModel->findUserByEmail($data['email'])){ // Check for user/email
           // User found
+          $this->logger->debug(__METHOD__ . " {$data['email']} was found");
         } else {
           // User not found
+          $this->logger->debug(__METHOD__ . " {$data['email']} was not found");
           $data['email_err'] = 'No user found';
         }
 
@@ -125,6 +137,7 @@
           if($loggedInUser){
             // Create Session
             $this->createUserSession($loggedInUser);
+            $this->logger->info(__METHOD__ . " user {$loggedInUser->id} was logged in successfully");
           } else {
             $data['password_err'] = 'Password incorrect';
 
@@ -135,6 +148,8 @@
           $this->view('users/login', $data);
         }
       } else {
+        $this->logger->debug(__METHOD__ . " request method {$_SERVER['REQUEST_METHOD']}");
+
         // Init data
         $data =[    
           'email' => '',
@@ -149,6 +164,8 @@
     }
 
     public function createUserSession($user){
+      $this->logger->debug(__METHOD__ . " started");
+
       $_SESSION['user_id'] = $user->id;
       $_SESSION['user_email'] = $user->email;
       $_SESSION['user_name'] = $user->name;
@@ -156,6 +173,8 @@
     }
 
     public function logout(){
+      $this->logger->info(__METHOD__ . " user {$_SESSION['user_id']} is logging out");
+
       unset($_SESSION['user_id']);
       unset($_SESSION['user_email']);
       unset($_SESSION['user_name']);
