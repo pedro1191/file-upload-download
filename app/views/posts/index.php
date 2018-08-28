@@ -5,7 +5,7 @@
       <h1>My Files</h1>
     </div>
     <div class="col-md-6">
-      <a href="<?php echo URLROOT; ?>/posts/add" class="btn btn-success pull-right">
+      <a href="<?php echo URLROOT; ?>/posts/add" class="btn btn-primary pull-right">
         <i class="fa fa-upload"></i> Upload
       </a>
     </div>
