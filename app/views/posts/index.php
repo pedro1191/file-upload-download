@@ -22,7 +22,7 @@
             <button type="submit" value="<?php echo $post->getFilename(); ?>" name="id" class="btn btn-light pull-right"><i class="fa fa-download"></i> Download</button>
           </form>
 	        <form action="<?php echo URLROOT; ?>/posts/show" method="post">
-            <button type="submit" value="<?php echo $post->getFilename(); ?>" name="id" class="btn btn-secondary pull-right mr-2">Delete</button>
+            <button type="submit" value="<?php echo $post->getFilename(); ?>" name="id" class="btn btn-danger pull-right mr-2">Delete</button>
           </form>
 	      </div>
       </div>
