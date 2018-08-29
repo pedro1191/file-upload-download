@@ -34,6 +34,8 @@
       } catch(UnexpectedValueException $e) {
         $this->logger->error(__METHOD__ . " error trying to iterate over {$this->directoryPath}. Directory exists? It has enough privileges?");
       }
+      usort($results, array('PostComparator', 'cmp'));
+
       $total = count($results);
       $offset = ($offset * RESULTSPERPAGE);
       $results = array_slice($results, $offset, RESULTSPERPAGE);
