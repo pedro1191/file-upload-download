@@ -31,3 +31,5 @@
   // Search and pagination
   define('RESULTSPERPAGE', 10);
   define('MAXNUMBEROFLINKS', 3);
+  // Max file size in bytes
+  define('MAXFILESIZE', 5000000); //5MB

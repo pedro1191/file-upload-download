@@ -12,6 +12,7 @@
 	       </div>
       </div>
       <input type="submit" class="btn btn-success" value="Send">
+      <input type="hidden" id="maxfilesize" value="<?php echo MAXFILESIZE; ?>">
     </form>
   </div>
 <?php require APPROOT . '/views/inc/footer.php'; ?>

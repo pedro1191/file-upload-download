@@ -86,7 +86,9 @@
         } elseif ($data['file']['error'] != 0) { // Anything else than UPLOAD_ERR_OK or UPLOAD_ERR_NO_FILE...
           $this->logger->error(__METHOD__ . " file error code {$data['file']['error']} was returned");
       	  $data['file_err'] = 'An error occurred trying to send the file. Try again';
-      	}
+      	} elseif ($data['file']['size'] > MAXFILESIZE) {
+          $data['file_err'] = 'Maximum file size must be ' . MAXFILESIZE/1000000 . 'MB';
+        }
 
         // Make sure no errors
         if(empty($data['file_err'])){
