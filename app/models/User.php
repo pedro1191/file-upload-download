@@ -1,13 +1,17 @@
 <?php
   class User {
     private $db;
+    private $logger;
 
     public function __construct(){
       $this->db = new Database;
+      $this->logger = new Logger(__FILE__);
     }
 
     // Register user
     public function register($data){
+      $this->logger->debug(__METHOD__ . " started");
+
       $this->db->query('INSERT INTO user (name, email, password) VALUES(:name, :email, :password)');
       // Bind values
       $this->db->bind(':name', $data['name']);
@@ -24,6 +28,8 @@
 
     // Login User
     public function login($email, $password){
+      $this->logger->debug(__METHOD__ . " started");
+
       $this->db->query('SELECT * FROM user WHERE email = :email');
       $this->db->bind(':email', $email);
 
@@ -39,6 +45,8 @@
 
     // Find user by email
     public function findUserByEmail($email){
+      $this->logger->debug(__METHOD__ . " started");
+
       $this->db->query('SELECT * FROM user WHERE email = :email');
       // Bind value
       $this->db->bind(':email', $email);
@@ -55,6 +63,8 @@
 
     // Get User by ID
     public function getUserById($id){
+      $this->logger->debug(__METHOD__ . " started");
+      
       $this->db->query('SELECT * FROM user WHERE id = :id');
       // Bind value
       $this->db->bind(':id', $id);
