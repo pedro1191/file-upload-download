@@ -32,7 +32,7 @@
           }
         }
       } catch(UnexpectedValueException $e) {
-        $this->logger->error(__METHOD__ . " error trying to iterate over {$this->directoryPath}");
+        $this->logger->error(__METHOD__ . " error trying to iterate over {$this->directoryPath}. Directory exists? It has enough privileges?");
       }
       $total = count($results);
       $offset = ($offset * RESULTSPERPAGE);
@@ -49,12 +49,12 @@
 
       if (!file_exists(USERFILESROOT)) {
         if(!mkdir(USERFILESROOT, 0777, true)) {
-          $this->logger->error(__METHOD__ . " creating directory " . USERFILESROOT . " failed");
+          $this->logger->error(__METHOD__ . " creating directory " . USERFILESROOT . " failed. It has enough privileges?");
         }
       }
       if (!file_exists($this->directoryPath)) {
         if(!mkdir($this->directoryPath, 0777, true)) {
-          $this->logger->error(__METHOD__ . " creating directory {$this->directoryPath} failed");
+          $this->logger->error(__METHOD__ . " creating directory {$this->directoryPath} failed. It has enough privileges?");
         }
       }
 
@@ -63,7 +63,7 @@
         $this->logger->info(__METHOD__ . " file {$fileName} was written successfully");
         return true;
       } else {
-        $this->logger->error(__METHOD__ . " writing file {$fileName} failed");
+        $this->logger->error(__METHOD__ . " writing file {$fileName} failed. It has enough privileges?");
         return false;
       }
     }
@@ -83,7 +83,7 @@
           }
         }
       } catch(UnexpectedValueException $e) {
-        $this->logger->error(__METHOD__ . " error trying to iterate over {$this->directoryPath}");
+        $this->logger->error(__METHOD__ . " error trying to iterate over {$this->directoryPath}. Directory exists? It has enough privileges?");
       }
 
       return $result;
@@ -103,7 +103,7 @@
           }
         }
       } catch(UnexpectedValueException $e) {
-        $this->logger->error(__METHOD__ . " error trying to iterate over {$this->directoryPath}");
+        $this->logger->error(__METHOD__ . " error trying to iterate over {$this->directoryPath}. Directory exists? It has enough privileges?");
       }
 
       // Execute
@@ -111,7 +111,7 @@
         $this->logger->info(__METHOD__ . " file {$id} was deleted successfully");
         return true;
       } else {
-        $this->logger->error(__METHOD__ . " deleting file {$id} failed");
+        $this->logger->error(__METHOD__ . " deleting file {$id} failed. It has enough privileges?");
         return false;
       }
     }
@@ -133,7 +133,7 @@
       if(readfile($post->getPathname())) {
         $this->logger->info(__METHOD__ . " file {$fileName} successfully downloaded");
       } else {
-        $this->logger->error(__METHOD__ . " error reading file {$fileName}");
+        $this->logger->error(__METHOD__ . " error reading file {$fileName}. It has enough privileges?");
       }
     }
   }
