@@ -2,13 +2,17 @@
   class Post {
     private $db;
     private $directoryPath;
+    private $logger;
 
     public function __construct(){
       $this->db = new Database;
       $this->directoryPath = USERFILESROOT . DIRECTORY_SEPARATOR . $_SESSION['user_id'];
+      $this->logger = new Logger(__FILE__);
     }
 
     public function getPosts(){
+      $this->logger->debug(__METHOD__ . " started");
+
       $results = array();
 
       try {
@@ -18,31 +22,42 @@
           if($fileInfo->isFile()) array_push($results, new SplFileInfo($fileInfo->getPathname()));
         }
       } catch(UnexpectedValueException $e) {
-        //directory cannot be found. Nothing to do
+        $this->logger->error(__METHOD__ . " error trying to iterate over {$this->directoryPath}");
       }
 
       return $results;
     }
 
     public function addPost($data){
-      $target_file = $this->directoryPath . DIRECTORY_SEPARATOR . basename($data['file']['name']);
+      $this->logger->debug(__METHOD__ . " started");
+      
+      $fileName = basename($data['file']['name']);
+      $target_file = $this->directoryPath . DIRECTORY_SEPARATOR . $fileName;
 
       if (!file_exists(USERFILESROOT)) {
-        mkdir(USERFILESROOT, 0777, true);
+        if(!mkdir(USERFILESROOT, 0777, true)) {
+          $this->logger->error(__METHOD__ . " creating directory " . USERFILESROOT . " failed");
+        }
       }
       if (!file_exists($this->directoryPath)) {
-        mkdir($this->directoryPath, 0777, true);
+        if(!mkdir($this->directoryPath, 0777, true)) {
+          $this->logger->error(__METHOD__ . " creating directory {$this->directoryPath} failed");
+        }
       }
 
       // Execute
       if (move_uploaded_file($data['file']['tmp_name'], $target_file)) {
+        $this->logger->info(__METHOD__ . " file {$fileName} was written successfully");
         return true;
       } else {
+        $this->logger->error(__METHOD__ . " writing file {$fileName} failed");
         return false;
       }
     }
 
     public function getPostById($id){
+      $this->logger->debug(__METHOD__ . " started");
+
       $result = null;
 
       try {
@@ -55,13 +70,15 @@
           }
         }
       } catch(UnexpectedValueException $e) {
-        //directory cannot be found. Nothing to do
+        $this->logger->error(__METHOD__ . " error trying to iterate over {$this->directoryPath}");
       }
 
       return $result;
     }
 
     public function deletePost($id){
+      $this->logger->debug(__METHOD__ . " started");
+
       $removed = false;
       try {
         $directory = new DirectoryIterator($this->directoryPath);
@@ -73,18 +90,21 @@
           }
         }
       } catch(UnexpectedValueException $e) {
-        //directory cannot be found. Nothing to do
+        $this->logger->error(__METHOD__ . " error trying to iterate over {$this->directoryPath}");
       }
 
       // Execute
       if($removed){
+        $this->logger->info(__METHOD__ . " file {$id} was deleted successfully");
         return true;
       } else {
+        $this->logger->error(__METHOD__ . " deleting file {$id} failed");
         return false;
       }
     }
 
     public function downloadPost($post) {
+      $this->logger->debug(__METHOD__ . " started");
   
       $type = mime_content_type($post->getPathname());
       $fileName = $post->getFilename();
@@ -97,6 +117,10 @@
       header('Expires: 0');
       // Send the file contents.
       set_time_limit(0);
-      readfile($post->getPathname());
+      if(readfile($post->getPathname())) {
+        $this->logger->info(__METHOD__ . " file {$fileName} successfully downloaded");
+      } else {
+        $this->logger->error(__METHOD__ . " error reading file {$fileName}");
+      }
     }
   }
