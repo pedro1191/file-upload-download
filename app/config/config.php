@@ -28,3 +28,6 @@
   // User Files Root
   define('DIRECTORYNAME', 'userFiles'); //This constant is used only in this file
   define('USERFILESROOT', PUBLICROOT . DIRECTORY_SEPARATOR . DIRECTORYNAME);
+  // Search and pagination
+  define('RESULTSPERPAGE', 10);
+  define('MAXNUMBEROFLINKS', 3);

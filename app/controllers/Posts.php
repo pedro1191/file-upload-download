@@ -13,11 +13,55 @@
     public function index(){
       $this->logger->debug(__METHOD__ . " started");
 
-      // Get posts
-      $posts = $this->postModel->getPosts();
+      $q = '';
+      $offset = 0;
 
+      if($_SERVER['REQUEST_METHOD'] == 'POST'){
+        // Sanitize POST array
+        $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+
+        $q = isset($_POST['q']) ? $_POST['q'] : $q;
+        $offset = (isset($_POST['offset']) && filter_var($_POST['offset'], FILTER_VALIDATE_INT) && ($_POST['offset'] >= 0)) ? $_POST['offset'] : $offset;
+      } else {
+        $this->logger->debug(__METHOD__ . " request method {$_SERVER['REQUEST_METHOD']}");
+      }
+      // Get posts
+      $posts = $this->postModel->getPosts($q, $offset);
+
+      //prepare data
+      $pages_mod = $posts[1]%RESULTSPERPAGE;
+      $pages_div = intdiv($posts[1], RESULTSPERPAGE);
+      $number_of_pages = ($pages_mod == 0) ? $pages_div : ++$pages_div;
+      $prev_page = $offset - 1;
+      $next_page = $offset + 1;
+      $start = 0;
+      $end = $number_of_pages;
+      $max_number_of_pages = (MAXNUMBEROFLINKS * 2);
+
+      if ($number_of_pages > $max_number_of_pages) {
+        $this->logger->debug(__METHOD__ . " creating pagination for results");
+
+        $start = (($offset - MAXNUMBEROFLINKS) < 0) ? $start : ($offset - MAXNUMBEROFLINKS);
+        $end = (($offset + MAXNUMBEROFLINKS) > $number_of_pages) ? $end : ($offset + MAXNUMBEROFLINKS);
+
+        while (($end - $start) < $max_number_of_pages && $end < $number_of_pages) {
+          $end++;
+        }
+
+        while (($end - $start) < $max_number_of_pages && $start > 0) {
+          $start--;
+        }
+      }
       $data = [
-        'posts' => $posts
+        'posts' => $posts[0],
+        'total' => $posts[1],
+        'query' => $q,
+        'number_of_pages' => $number_of_pages,
+        'start' => $start,
+        'end' => $end,
+        'prev_page' => ($prev_page < 0) ? null : $prev_page,
+        'current_page' => $offset,
+        'next_page' => ($next_page >= $number_of_pages) ? null : $next_page
       ];
 
       $this->view('posts/index', $data);

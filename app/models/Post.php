@@ -10,22 +10,35 @@
       $this->logger = new Logger(__FILE__);
     }
 
-    public function getPosts(){
+    public function getPosts($q, $offset){
       $this->logger->debug(__METHOD__ . " started");
 
       $results = array();
+      $q = strtolower(trim($q));
+      $qLen = strlen($q);
 
       try {
         $directory = new DirectoryIterator($this->directoryPath);
         foreach ($directory as $fileInfo) {
           if($fileInfo->isDot()) continue;
-          if($fileInfo->isFile()) array_push($results, new SplFileInfo($fileInfo->getPathname()));
+          if($fileInfo->isFile()) {
+            if ($qLen > 0) {
+              if(strpos(strtolower($fileInfo->getFilename()), $q) !== false) {
+                array_push($results, new SplFileInfo($fileInfo->getPathname()));
+              }
+            } else {
+              array_push($results, new SplFileInfo($fileInfo->getPathname()));
+            }
+          }
         }
       } catch(UnexpectedValueException $e) {
         $this->logger->error(__METHOD__ . " error trying to iterate over {$this->directoryPath}");
       }
+      $total = count($results);
+      $offset = ($offset * RESULTSPERPAGE);
+      $results = array_slice($results, $offset, RESULTSPERPAGE);
 
-      return $results;
+      return array($results, $total);
     }
 
     public function addPost($data){
