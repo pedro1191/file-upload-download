@@ -13,7 +13,7 @@
   // Public Root
   define('PUBLICROOT', dirname(APPROOT) . DIRECTORY_SEPARATOR . 'public');
   // URL Root
-  define('URLROOT', 'http://192.168.0.125/file-upload-download');
+  define('URLROOT', 'http://192.168.0.125/php_projects/file-upload-download');
   // Site Name
   define('SITENAME', 'File Upload Download');
   // App Version
