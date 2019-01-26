@@ -17,7 +17,7 @@
   // Site Name
   define('SITENAME', 'File Upload Download');
   // App Version
-  define('APPVERSION', '1.2.1');
+  define('APPVERSION', '1.2.2');
   // Logging
   define('LOGFILEPATH', PUBLICROOT . DIRECTORY_SEPARATOR . 'app_log');
   define('LOG_TRACE_ACTIVE', false);
