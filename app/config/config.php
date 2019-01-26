@@ -1,8 +1,8 @@
 <?php
   // DB Params
-  define('DB_HOST', 'localhost');
+  define('DB_HOST', '192.168.0.128');
   define('DB_USER', 'root');
-  define('DB_PASS', 'mysql');
+  define('DB_PASS', 'computer@1.6');
   define('DB_NAME', 'fileuploaddownload');
 
   // Default time zone for dates
@@ -13,7 +13,7 @@
   // Public Root
   define('PUBLICROOT', dirname(APPROOT) . DIRECTORY_SEPARATOR . 'public');
   // URL Root
-  define('URLROOT', 'http://192.168.0.125/php_projects/file-upload-download');
+  define('URLROOT', 'http://192.168.0.128:8084');
   // Site Name
   define('SITENAME', 'File Upload Download');
   // App Version
